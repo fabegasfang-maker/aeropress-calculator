@@ -291,6 +291,117 @@
   }
   .warn-msg.show{ display:block; }
 
+  /* ---- TIMER MODULE ---- */
+  .timer-card {
+    background: var(--panel);
+    border: 1px solid var(--line-soft);
+    border-radius: 4px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 6px;
+    position: relative;
+    overflow: hidden;
+  }
+  .timer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .timer-title {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    color: var(--cream-dim);
+  }
+  .timer-presets {
+    display: flex;
+    gap: 6px;
+  }
+  .timer-preset-btn {
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    color: var(--cream-dim);
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .timer-preset-btn:hover {
+    border-color: var(--accent);
+    color: var(--cream);
+  }
+  .timer-preset-btn.active {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+    font-weight: 600;
+  }
+  .timer-display-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .timer-display {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 42px;
+    font-weight: 700;
+    color: var(--cream);
+    letter-spacing: 0.05em;
+    line-height: 1;
+  }
+  .timer-controls {
+    display: flex;
+    gap: 8px;
+  }
+  .timer-btn {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    padding: 10px 18px;
+    border-radius: 3px;
+    border: 1px solid var(--line);
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .timer-btn-primary {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+  }
+  .timer-btn-primary:hover {
+    opacity: 0.9;
+  }
+  .timer-btn-secondary {
+    background: var(--panel-2);
+    color: var(--cream-dim);
+  }
+  .timer-btn-secondary:hover {
+    color: var(--cream);
+    border-color: var(--cream-dim);
+  }
+  .timer-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: var(--accent);
+    width: 100%;
+    transition: width 1s linear, background-color .4s;
+  }
+  .timer-card.finished {
+    border-color: var(--accent);
+    animation: pulse 1s infinite alternate;
+  }
+  @keyframes pulse {
+    from { box-shadow: 0 0 0px var(--accent); }
+    to { box-shadow: 0 0 12px var(--accent); }
+  }
+
   footer{
     margin-top:44px;
     padding-top:18px;
@@ -404,6 +515,26 @@
         </div>
         <div class="warn-msg" id="warnMsgCold"></div>
       </div>
+
+      <!-- TIMER MODULE -->
+      <div class="timer-card" id="timerCard">
+        <div class="timer-header">
+          <span class="timer-title">ตัวจับเวลาชง (BREW TIMER)</span>
+          <div class="timer-presets">
+            <button class="timer-preset-btn" data-time="105">1:45</button>
+            <button class="timer-preset-btn" data-time="110">1:50</button>
+            <button class="timer-preset-btn active" data-time="120">2:00</button>
+          </div>
+        </div>
+        <div class="timer-display-wrap">
+          <div class="timer-display" id="timerDisplay">02:00</div>
+          <div class="timer-controls">
+            <button class="timer-btn timer-btn-primary" id="timerStartBtn">เริ่ม</button>
+            <button class="timer-btn timer-btn-secondary" id="timerResetBtn">รีเซ็ต</button>
+          </div>
+        </div>
+        <div class="timer-progress" id="timerProgress"></div>
+      </div>
     </div>
   </div>
 
@@ -412,7 +543,7 @@
     เพื่อให้ได้อัตราส่วนกาแฟต่อน้ำทั้งหมดตามที่ตั้งไว้ด้านบน เกจด้านซ้ายจะขีดเส้นเฉพาะค่าที่ใช้งานจริง (สกัด / หลังน้ำแข็งละลาย / รวม) ไม่แบ่งสเกลลอยๆ
     <br>โหมดชงเย็น: กาแฟร้อนที่กดลงบนน้ำแข็งจะละลายน้ำแข็งบางส่วนทันที ปริมาณน้ำที่ละลายนี้ถูกนับเป็นน้ำเจือจางไปแล้วส่วนหนึ่ง
     ตัวเลขที่เหลือคือน้ำ/น้ำแข็งที่ควรเติมเพิ่มให้ครบตามอัตราส่วน
-    <span class="assump">สมมติฐาน: น้ำแข็ง 1 ก้อน ≈ 30 g · ค่าเริ่มต้นสมมติว่าน้ำแข็งละลาย 45% จากความร้อนของน้ำสกัด (ปรับตัวเลขนี้ได้ตามลักษณะแก้ว/เวลาที่ทิ้งไว้) เป็นค่าประมาณเพื่อวางแผนสูตร ไม่ใช่ค่าฟิสิกส์ที่แม่นยำสัมบูรณ์</span>
+    <span class="assump">สมมติฐาน: น้ำแข็ง 1 ก้อน ≈ 30 g · ค่าเริ่มต้นสมมติว่าน้ำแข็งละลาย 45% จากความร้อนของน้ำสกัด (ปรับตัวเลขนี้ได้ตามลักษณะการชง/เวลาที่ทิ้งไว้) เป็นค่าประมาณเพื่อวางแผนสูตร ไม่ใช่ค่าฟิสิกส์ที่แม่นยำสัมบูรณ์</span>
   </footer>
 
 </div>
@@ -620,7 +751,102 @@
     }
   }
 
+  /* ---- TIMER LOGIC ---- */
+  let timerInterval = null;
+  let timerTotalSeconds = 120;
+  let timerRemainingSeconds = 120;
+  let isTimerRunning = false;
+
+  const timerDisplay = document.getElementById('timerDisplay');
+  const timerStartBtn = document.getElementById('timerStartBtn');
+  const timerResetBtn = document.getElementById('timerResetBtn');
+  const timerProgress = document.getElementById('timerProgress');
+  const timerCard = document.getElementById('timerCard');
+  const presetBtns = document.querySelectorAll('.timer-preset-btn');
+
+  function updateTimerUI() {
+    const mins = Math.floor(timerRemainingSeconds / 60);
+    const secs = timerRemainingSeconds % 60;
+    timerDisplay.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    const pct = (timerRemainingSeconds / timerTotalSeconds) * 100;
+    timerProgress.style.width = `${pct}%`;
+  }
+
+  function playAlertSound() {
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const now = audioCtx.currentTime;
+      [0, 0.2, 0.4].forEach((delay) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, now + delay);
+        gain.gain.setValueAtTime(0.15, now + delay);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.15);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now + delay);
+        osc.stop(now + delay + 0.15);
+      });
+    } catch(e) {
+      console.log('Audio Context error or not supported:', e);
+    }
+  }
+
+  function startTimer() {
+    if (isTimerRunning) {
+      clearInterval(timerInterval);
+      isTimerRunning = false;
+      timerStartBtn.textContent = 'เริ่มต่อ';
+      return;
+    }
+
+    if (timerRemainingSeconds <= 0) {
+      timerRemainingSeconds = timerTotalSeconds;
+      timerCard.classList.remove('finished');
+    }
+
+    isTimerRunning = true;
+    timerStartBtn.textContent = 'หยุด';
+
+    timerInterval = setInterval(() => {
+      timerRemainingSeconds--;
+      updateTimerUI();
+
+      if (timerRemainingSeconds <= 0) {
+        clearInterval(timerInterval);
+        isTimerRunning = false;
+        timerStartBtn.textContent = 'เริ่ม';
+        timerCard.classList.add('finished');
+        playAlertSound();
+      }
+    }, 1000);
+  }
+
+  function resetTimer() {
+    clearInterval(timerInterval);
+    isTimerRunning = false;
+    timerRemainingSeconds = timerTotalSeconds;
+    timerStartBtn.textContent = 'เริ่ม';
+    timerCard.classList.remove('finished');
+    updateTimerUI();
+  }
+
+  timerStartBtn.addEventListener('click', startTimer);
+  timerResetBtn.addEventListener('click', resetTimer);
+
+  presetBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      presetBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const timeSecs = parseInt(btn.dataset.time, 10);
+      timerTotalSeconds = timeSecs;
+      resetTimer();
+    });
+  });
+
   setMode('hot');
+  updateTimerUI();
 </script>
 </body>
 </html>
