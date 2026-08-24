@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AeroPress Ratio — เครื่องคำนวณสูตรชง</title>
+<title>AeroPress Ratio — เครื่องคำนวณสูตรชง & บันทึกการชง</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -50,7 +50,7 @@
     align-items:flex-end;
     border-bottom:1px solid var(--line);
     padding-bottom:20px;
-    margin-bottom:32px;
+    margin-bottom:24px;
   }
   .brandmark{
     font-family:'Chakra Petch', sans-serif;
@@ -77,7 +77,33 @@
     transition:color 0.4s, border-color 0.4s;
   }
 
-  /* ---- Ratio control ---- */
+  /* Navigation Tabs */
+  .nav-tabs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 28px;
+    border-bottom: 1px solid var(--line-soft);
+    padding-bottom: 12px;
+  }
+  .nav-btn {
+    background: transparent;
+    border: none;
+    color: var(--cream-dim);
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+  .nav-btn.active {
+    background: var(--panel-2);
+    color: var(--accent);
+    border: 1px solid var(--line);
+  }
+
+  /* Ratio control */
   .ratio-block{
     display:flex;
     flex-direction:column;
@@ -136,7 +162,7 @@
   }
   .ratio-display input:focus{outline:none; border-bottom-color:var(--accent);}
 
-  /* ---- Mode tabs ---- */
+  /* Mode tabs */
   .mode-tabs{
     display:flex;
     gap:1px;
@@ -176,7 +202,7 @@
   }
   .mode-tabs button.active .dot{ background:var(--accent); }
 
-  /* ---- Main grid ---- */
+  /* Main grid */
   .main-grid{
     display:grid;
     grid-template-columns:220px 1fr;
@@ -207,6 +233,7 @@
     display:flex;
     align-items:center;
     justify-content:space-between;
+    gap: 12px;
   }
   .field label{
     font-size:14.5px;
@@ -226,16 +253,22 @@
     gap:6px;
   }
   .field input{
-    width:72px;
+    width:100%;
+    max-width:180px;
     background:transparent;
     border:none;
     border-bottom:1px solid var(--line);
     color:var(--cream);
-    font-family:'Chakra Petch', sans-serif;
-    font-size:20px;
-    font-weight:600;
+    font-family:'Sarabun', sans-serif;
+    font-size:16px;
     text-align:right;
-    padding:2px 0;
+    padding:4px 0;
+  }
+  .field input.num-input {
+    width: 72px;
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
   }
   .field input:focus{ outline:none; border-bottom-color:var(--accent); }
   .field .g{ font-family:'Chakra Petch', sans-serif; font-size:13px; color:var(--cream-dim); }
@@ -291,7 +324,7 @@
   }
   .warn-msg.show{ display:block; }
 
-  /* ---- TIMER MODULE ---- */
+  /* TIMER MODULE */
   .timer-card {
     background: var(--panel);
     border: 1px solid var(--line-soft);
@@ -373,9 +406,7 @@
     color: var(--bg);
     border-color: var(--accent);
   }
-  .timer-btn-primary:hover {
-    opacity: 0.9;
-  }
+  .timer-btn-primary:hover { opacity: 0.9; }
   .timer-btn-secondary {
     background: var(--panel-2);
     color: var(--cream-dim);
@@ -402,6 +433,116 @@
     to { box-shadow: 0 0 12px var(--accent); }
   }
 
+  /* LOG STYLES */
+  .log-form-wrap {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 24px;
+    margin-bottom: 32px;
+  }
+  .log-form-title {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .log-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 600px) {
+    .log-grid { grid-template-columns: 1fr; }
+  }
+  .btn-submit {
+    grid-column: 1 / -1;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 12px;
+    border-radius: 3px;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: opacity 0.2s;
+  }
+  .btn-submit:hover { opacity: 0.9; }
+
+  .log-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .log-card {
+    background: var(--panel-2);
+    border: 1px solid var(--line-soft);
+    border-left: 4px solid var(--accent);
+    border-radius: 4px;
+    padding: 18px;
+    position: relative;
+  }
+  .log-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .log-card-title {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--cream);
+  }
+  .log-card-mode {
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .log-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+    font-size: 13.5px;
+    margin-bottom: 12px;
+  }
+  .log-detail-item {
+    display: flex;
+    flex-direction: column;
+  }
+  .log-detail-label {
+    font-size: 11px;
+    color: var(--cream-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .log-detail-val {
+    color: var(--cream);
+    font-weight: 500;
+  }
+  .log-notes-box {
+    background: var(--panel);
+    border-radius: 3px;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: var(--cream-dim);
+    line-height: 1.5;
+  }
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--cream-dim);
+    opacity: 0.6;
+    font-size: 14px;
+  }
+
   footer{
     margin-top:44px;
     padding-top:18px;
@@ -409,12 +550,6 @@
     font-size:12.5px;
     color:var(--cream-dim);
     line-height:1.7;
-  }
-  footer .assump{
-    opacity:0.65;
-    display:block;
-    margin-top:8px;
-    font-size:11.5px;
   }
 </style>
 </head>
@@ -429,126 +564,177 @@
     <div class="unit-tag" id="modeTag">โหมดร้อน</div>
   </header>
 
-  <div class="ratio-block">
-    <div class="ratio-label">อัตราส่วนเป้าหมาย (RATIO)</div>
-    <div class="ratio-stepper">
-      <button id="ratioMinus" aria-label="ลด">−</button>
-      <div class="ratio-display">1 : <input type="number" id="ratioInput" value="15" step="0.5" min="8" max="20"></div>
-      <button id="ratioPlus" aria-label="เพิ่ม">+</button>
+  <!-- Navigation -->
+  <div class="nav-tabs">
+    <button class="nav-btn active" id="btnViewCalc">เครื่องคำนวณ</button>
+    <button class="nav-btn" id="btnViewLog">สมุดบันทึกสูตร (Google Sheet)</button>
+  </div>
+
+  <!-- VIEW 1: CALCULATOR -->
+  <div id="viewCalc">
+    <div class="ratio-block">
+      <div class="ratio-label">อัตราส่วนเป้าหมาย (RATIO)</div>
+      <div class="ratio-stepper">
+        <button id="ratioMinus" aria-label="ลด">−</button>
+        <div class="ratio-display">1 : <input type="number" id="ratioInput" value="15" step="0.5" min="8" max="20"></div>
+        <button id="ratioPlus" aria-label="เพิ่ม">+</button>
+      </div>
+    </div>
+
+    <div class="mode-tabs">
+      <button class="tab active" data-mode="hot"><span class="dot"></span> ชงร้อน (Hot)</button>
+      <button class="tab" data-mode="cold"><span class="dot"></span> ชงเย็น (Cold / Iced)</button>
+    </div>
+
+    <div class="main-grid">
+      <div class="gauge-wrap">
+        <svg id="gauge" width="200" height="380" viewBox="0 0 200 380"></svg>
+      </div>
+
+      <div class="controls">
+        <div class="field">
+          <label>ขนาดกาแฟ (dose)</label>
+          <div class="input-wrap">
+            <input type="number" id="doseInput" class="num-input" value="18" min="1" step="0.5">
+            <span class="g">g</span>
+          </div>
+        </div>
+        <div class="field">
+          <label id="brewLabel">น้ำร้อนสำหรับสกัด</label>
+          <div class="input-wrap">
+            <input type="number" id="brewInput" class="num-input" value="100" min="0" step="1">
+            <span class="g">g</span>
+          </div>
+        </div>
+        <div class="field" id="iceField" style="display:none">
+          <label>จำนวนน้ำแข็ง<span class="hint">≈ 30 g / ก้อน</span></label>
+          <div class="input-wrap">
+            <input type="number" id="iceInput" class="num-input" value="5" min="0" step="1">
+            <span class="g">ก้อน</span>
+          </div>
+        </div>
+        <div class="field" id="meltField" style="display:none">
+          <label>อัตราการละลาย (สมมติฐาน)<span class="hint">ปรับได้ตามลักษณะการชง</span></label>
+          <div class="input-wrap">
+            <input type="number" id="meltPercentInput" class="num-input" value="45" min="0" max="100" step="5">
+            <span class="g">%</span>
+          </div>
+        </div>
+
+        <!-- HOT MODE RESULT -->
+        <div class="result" id="hotResult">
+          <div class="result-row">
+            <span>น้ำทั้งหมดที่ต้องใช้ (ตามอัตราส่วน)</span>
+            <span id="totalOut">0 g</span>
+          </div>
+          <div class="result-row highlight">
+            <span>น้ำเจือจางที่ต้องเติม</span>
+            <span id="diluteOut">0 g</span>
+          </div>
+          <div class="result-row">
+            <span>อัตราส่วนจริงที่ได้</span>
+            <span id="actualRatioOut">1 : 15.0</span>
+          </div>
+          <div class="warn-msg" id="warnMsg">น้ำที่ใช้สกัดมากกว่าปริมาณน้ำทั้งหมดตามอัตราส่วนแล้ว — ลดน้ำสกัด หรือเพิ่มอัตราส่วน</div>
+        </div>
+
+        <!-- COLD MODE RESULT -->
+        <div class="result" id="coldResult" style="display:none">
+          <div class="result-row">
+            <span>น้ำทั้งหมดที่ต้องใช้ (ตามอัตราส่วน)</span>
+            <span id="totalOutCold">0 g</span>
+          </div>
+          <div class="result-row">
+            <span>น้ำแข็งที่จะละลาย</span>
+            <span id="iceMeltedOut">0 g</span>
+          </div>
+          <div class="result-row highlight">
+            <span>น้ำ/น้ำแข็งเพิ่มเติมที่ต้องเติม</span>
+            <span id="diluteOutCold">0 g</span>
+          </div>
+          <div class="result-row">
+            <span>อัตราส่วนจริงที่ได้</span>
+            <span id="actualRatioOutCold">1 : 15.0</span>
+          </div>
+          <div class="warn-msg" id="warnMsgCold"></div>
+        </div>
+
+        <!-- TIMER MODULE -->
+        <div class="timer-card" id="timerCard">
+          <div class="timer-header">
+            <span class="timer-title">ตัวจับเวลาชง (BREW TIMER)</span>
+            <div class="timer-presets">
+              <button class="timer-preset-btn" data-time="105">1:45</button>
+              <button class="timer-preset-btn" data-time="110">1:50</button>
+              <button class="timer-preset-btn active" data-time="120">2:00</button>
+            </div>
+          </div>
+          <div class="timer-display-wrap">
+            <div class="timer-display" id="timerDisplay">02:00</div>
+            <div class="timer-controls">
+              <button class="timer-btn timer-btn-primary" id="timerStartBtn">เริ่ม</button>
+              <button class="timer-btn timer-btn-secondary" id="timerResetBtn">รีเซ็ต</button>
+            </div>
+          </div>
+          <div class="timer-progress" id="timerProgress"></div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="mode-tabs">
-    <button class="tab active" data-mode="hot"><span class="dot"></span> ชงร้อน (Hot)</button>
-    <button class="tab" data-mode="cold"><span class="dot"></span> ชงเย็น (Cold / Iced)</button>
-  </div>
-
-  <div class="main-grid">
-    <div class="gauge-wrap">
-      <svg id="gauge" width="200" height="380" viewBox="0 0 200 380"></svg>
+  <!-- VIEW 2: LOG FORM & HISTORY -->
+  <div id="viewLog" style="display:none;">
+    <div class="log-form-wrap">
+      <div class="log-form-title">📝 บันทึกสูตรชงใหม่ลง Google Sheet</div>
+      <form id="brewLogForm">
+        <div class="log-grid">
+          <div class="field">
+            <label>Origin (ชื่อกาแฟ)</label>
+            <input type="text" id="logCoffee" placeholder="เช่น Loa, Akha" required>
+          </div>
+          <div class="field">
+            <label>ระดับการคั่ว</label>
+            <input type="text" id="logRoast" placeholder="เช่น กลาง, อ่อน">
+          </div>
+          <div class="field">
+            <label>Process</label>
+            <input type="text" id="logProcess" placeholder="เช่น Washed (สะอาด)">
+          </div>
+          <div class="field">
+            <label>เบอร์บด (Clix)</label>
+            <input type="text" id="logGrind" placeholder="เช่น 41">
+          </div>
+          <div class="field">
+            <label>อุณหภูมิน้ำ (°C)</label>
+            <input type="text" id="logTemp" placeholder="เช่น 80">
+          </div>
+          <div class="field">
+            <label>เวลาแช่ (นาที)</label>
+            <input type="text" id="logSteep" placeholder="เช่น 2">
+          </div>
+          <div class="field" style="grid-column: 1 / -1;">
+            <label>รสชาติที่ได้ (บันทึกใน Col P)</label>
+            <input type="text" id="logNotes" style="max-width:100%;" placeholder="เช่น ช็อกโกแลต, ถั่ว, ผลไม้เขตร้อน">
+          </div>
+          <button type="submit" class="btn-submit" id="btnSubmit">บันทึกสูตรลง Google Sheet</button>
+        </div>
+      </form>
     </div>
 
-    <div class="controls">
-      <div class="field">
-        <label>ขนาดกาแฟ (dose)</label>
-        <div class="input-wrap">
-          <input type="number" id="doseInput" value="18" min="1" step="0.5">
-          <span class="g">g</span>
-        </div>
-      </div>
-      <div class="field">
-        <label id="brewLabel">น้ำร้อนสำหรับสกัด</label>
-        <div class="input-wrap">
-          <input type="number" id="brewInput" value="100" min="0" step="1">
-          <span class="g">g</span>
-        </div>
-      </div>
-      <div class="field" id="iceField" style="display:none">
-        <label>จำนวนน้ำแข็ง<span class="hint">≈ 30 g / ก้อน</span></label>
-        <div class="input-wrap">
-          <input type="number" id="iceInput" value="5" min="0" step="1">
-          <span class="g">ก้อน</span>
-        </div>
-      </div>
-      <div class="field" id="meltField" style="display:none">
-        <label>อัตราการละลาย (สมมติฐาน)<span class="hint">ปรับได้ตามลักษณะการชง</span></label>
-        <div class="input-wrap">
-          <input type="number" id="meltPercentInput" value="45" min="0" max="100" step="5">
-          <span class="g">%</span>
-        </div>
-      </div>
-
-      <!-- HOT MODE RESULT -->
-      <div class="result" id="hotResult">
-        <div class="result-row">
-          <span>น้ำทั้งหมดที่ต้องใช้ (ตามอัตราส่วน)</span>
-          <span id="totalOut">0 g</span>
-        </div>
-        <div class="result-row highlight">
-          <span>น้ำเจือจางที่ต้องเติม</span>
-          <span id="diluteOut">0 g</span>
-        </div>
-        <div class="result-row">
-          <span>อัตราส่วนจริงที่ได้</span>
-          <span id="actualRatioOut">1 : 15.0</span>
-        </div>
-        <div class="warn-msg" id="warnMsg">น้ำที่ใช้สกัดมากกว่าปริมาณน้ำทั้งหมดตามอัตราส่วนแล้ว — ลดน้ำสกัด หรือเพิ่มอัตราส่วน</div>
-      </div>
-
-      <!-- COLD MODE RESULT -->
-      <div class="result" id="coldResult" style="display:none">
-        <div class="result-row">
-          <span>น้ำทั้งหมดที่ต้องใช้ (ตามอัตราส่วน)</span>
-          <span id="totalOutCold">0 g</span>
-        </div>
-        <div class="result-row">
-          <span>น้ำแข็งที่จะละลาย</span>
-          <span id="iceMeltedOut">0 g</span>
-        </div>
-        <div class="result-row highlight">
-          <span>น้ำ/น้ำแข็งเพิ่มเติมที่ต้องเติม</span>
-          <span id="diluteOutCold">0 g</span>
-        </div>
-        <div class="result-row">
-          <span>อัตราส่วนจริงที่ได้</span>
-          <span id="actualRatioOutCold">1 : 15.0</span>
-        </div>
-        <div class="warn-msg" id="warnMsgCold"></div>
-      </div>
-
-      <!-- TIMER MODULE -->
-      <div class="timer-card" id="timerCard">
-        <div class="timer-header">
-          <span class="timer-title">ตัวจับเวลาชง (BREW TIMER)</span>
-          <div class="timer-presets">
-            <button class="timer-preset-btn" data-time="105">1:45</button>
-            <button class="timer-preset-btn" data-time="110">1:50</button>
-            <button class="timer-preset-btn active" data-time="120">2:00</button>
-          </div>
-        </div>
-        <div class="timer-display-wrap">
-          <div class="timer-display" id="timerDisplay">02:00</div>
-          <div class="timer-controls">
-            <button class="timer-btn timer-btn-primary" id="timerStartBtn">เริ่ม</button>
-            <button class="timer-btn timer-btn-secondary" id="timerResetBtn">รีเซ็ต</button>
-          </div>
-        </div>
-        <div class="timer-progress" id="timerProgress"></div>
-      </div>
-    </div>
+    <div class="log-form-title">☕ รายการสูตรทั้งหมดจาก Google Sheet</div>
+    <div id="logList" class="log-list"></div>
   </div>
 
   <footer>
     วิธีอ่านค่า: ใส่กาแฟและน้ำร้อนตามปริมาณที่ใช้ "สกัด" กาแฟในกระบอก AeroPress ก่อน จากนั้นเติมน้ำ/น้ำแข็งตามค่าที่คำนวณให้
-    เพื่อให้ได้อัตราส่วนกาแฟต่อน้ำทั้งหมดตามที่ตั้งไว้ด้านบน เกจด้านซ้ายจะขีดเส้นเฉพาะค่าที่ใช้งานจริง (สกัด / หลังน้ำแข็งละลาย / รวม) ไม่แบ่งสเกลลอยๆ
-    <br>โหมดชงเย็น: กาแฟร้อนที่กดลงบนน้ำแข็งจะละลายน้ำแข็งบางส่วนทันที ปริมาณน้ำที่ละลายนี้ถูกนับเป็นน้ำเจือจางไปแล้วส่วนหนึ่ง
-    ตัวเลขที่เหลือคือน้ำ/น้ำแข็งที่ควรเติมเพิ่มให้ครบตามอัตราส่วน
-    <span class="assump">สมมติฐาน: น้ำแข็ง 1 ก้อน ≈ 30 g · ค่าเริ่มต้นสมมติว่าน้ำแข็งละลาย 45% จากความร้อนของน้ำสกัด (ปรับตัวเลขนี้ได้ตามลักษณะการชง/เวลาที่ทิ้งไว้) เป็นค่าประมาณเพื่อวางแผนสูตร ไม่ใช่ค่าฟิสิกส์ที่แม่นยำสัมบูรณ์</span>
   </footer>
 
 </div>
 
 <script>
+  // Web App URL ที่อัปเดตสิทธิ์ใหม่แล้ว
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwASV9OLb5hn9Y_wwJ0zBvFuQjX9LCHxnI1ouSPuyHynfrHI0zn1edb44xzh8cD3MtM9w/exec";
+
   const state = {
     ratio: 15,
     mode: 'hot',
@@ -556,7 +742,27 @@
     cold: { dose: 18, brew: 100, ice: 5, meltPercent: 45 },
   };
 
-  const CUBE_G = 30; // assumed grams per ice cube
+  const CUBE_G = 30;
+
+  const btnViewCalc = document.getElementById('btnViewCalc');
+  const btnViewLog  = document.getElementById('btnViewLog');
+  const viewCalc    = document.getElementById('viewCalc');
+  const viewLog     = document.getElementById('viewLog');
+
+  btnViewCalc.addEventListener('click', () => {
+    btnViewCalc.classList.add('active');
+    btnViewLog.classList.remove('active');
+    viewCalc.style.display = 'block';
+    viewLog.style.display = 'none';
+  });
+
+  btnViewLog.addEventListener('click', () => {
+    btnViewLog.classList.add('active');
+    btnViewCalc.classList.remove('active');
+    viewCalc.style.display = 'none';
+    viewLog.style.display = 'block';
+    renderLogs();
+  });
 
   const ratioInput   = document.getElementById('ratioInput');
   const ratioMinus   = document.getElementById('ratioMinus');
@@ -630,13 +836,10 @@
     compute();
   });
 
-  // marks: [{value, label}] — only real, used values get drawn on the gauge
   function drawGauge(marks, fillTopValue, maxScale){
     const top = 26, bottom = 350, height = bottom - top;
     const cx = 100, halfW = 42;
-
     const valToY = v => bottom - height * Math.max(0, Math.min(1, v / maxScale));
-
     const sortedFills = [...marks].sort((a,b) => a.value - b.value);
 
     let fillRects = '';
@@ -667,14 +870,10 @@
           <rect x="${cx-halfW}" y="${top}" width="${halfW*2}" height="${height}" rx="10"/>
         </clipPath>
       </defs>
-
       <rect x="${cx-halfW}" y="${top}" width="${halfW*2}" height="${height}" rx="10"
             fill="var(--panel-2)" stroke="var(--line)" stroke-width="1.5"/>
-
       <g clip-path="url(#cylClip)">${fillRects}</g>
-
       ${lines}
-
       <text x="${cx}" y="${bottom+22}" text-anchor="middle" font-family="Chakra Petch, sans-serif"
             font-size="10" letter-spacing="1.5" fill="var(--cream-dim)">GAUGE (g)</text>
     `;
@@ -751,7 +950,7 @@
     }
   }
 
-  /* ---- TIMER LOGIC ---- */
+  /* TIMER LOGIC */
   let timerInterval = null;
   let timerTotalSeconds = 120;
   let timerRemainingSeconds = 120;
@@ -788,9 +987,7 @@
         osc.start(now + delay);
         osc.stop(now + delay + 0.15);
       });
-    } catch(e) {
-      console.log('Audio Context error or not supported:', e);
-    }
+    } catch(e) {}
   }
 
   function startTimer() {
@@ -842,6 +1039,103 @@
       const timeSecs = parseInt(btn.dataset.time, 10);
       timerTotalSeconds = timeSecs;
       resetTimer();
+    });
+  });
+
+  /* GOOGLE SHEETS API RENDER LOGIC */
+  const brewLogForm = document.getElementById('brewLogForm');
+  const logList     = document.getElementById('logList');
+  const btnSubmit   = document.getElementById('btnSubmit');
+
+  function renderLogs() {
+    logList.innerHTML = '<div class="empty-state">กำลังดึงข้อมูลสูตรจาก Google Sheet...</div>';
+    
+    fetch(GOOGLE_SCRIPT_URL)
+      .then(res => res.json())
+      .then(logs => {
+        if (!logs || logs.length === 0) {
+          logList.innerHTML = '<div class="empty-state">ยังไม่มีรายการบันทึกใน Google Sheet</div>';
+          return;
+        }
+
+        logs.reverse();
+
+        logList.innerHTML = logs.map(item => {
+          // เช็กเฉพาะ Column P (tasteNote) ว่ามีข้อมูลหรือไม่
+          const hasNote = item.tasteNote && String(item.tasteNote).trim() !== '';
+
+          return `
+            <div class="log-card">
+              <div class="log-card-header">
+                <div>
+                  <div class="log-card-title">${escapeHtml(item.coffee)}</div>
+                  <div class="log-card-mode">${escapeHtml(item.mode)} | ${escapeHtml(item.process || '-')}</div>
+                </div>
+              </div>
+              <div class="log-details">
+                <div class="log-detail-item">
+                  <span class="log-detail-label">ระดับการคั่ว</span>
+                  <span class="log-detail-val">${escapeHtml(item.roast || '-')}</span>
+                </div>
+                <div class="log-detail-item">
+                  <span class="log-detail-label">อุณหภูมิน้ำ</span>
+                  <span class="log-detail-val">${escapeHtml(item.temp ? item.temp + ' °C' : '-')}</span>
+                </div>
+                <div class="log-detail-item">
+                  <span class="log-detail-label">เบอร์บด</span>
+                  <span class="log-detail-val">${escapeHtml(item.grind || '-')}</span>
+                </div>
+                <div class="log-detail-item">
+                  <span class="log-detail-label">เวลาแช่</span>
+                  <span class="log-detail-val">${escapeHtml(item.steep ? item.steep + ' นาที' : '-')}</span>
+                </div>
+              </div>
+              ${hasNote ? `<div class="log-notes-box"><strong>รสชาติที่ได้:</strong> ${escapeHtml(item.tasteNote)}</div>` : ''}
+            </div>
+          `;
+        }).join('');
+      })
+      .catch(err => {
+        logList.innerHTML = '<div class="empty-state">ไม่สามารถดึงข้อมูลได้ กรุณาตรวจสอบสิทธิ์และ Web App URL</div>';
+      });
+  }
+
+  function escapeHtml(str) {
+    return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  brewLogForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    btnSubmit.textContent = 'กำลังบันทึกลง Google Sheet...';
+    btnSubmit.disabled = true;
+
+    const payload = {
+      mode:      state.mode === 'hot' ? 'HOT🔥' : 'ICED❄️',
+      coffee:    document.getElementById('logCoffee').value,
+      roast:     document.getElementById('logRoast').value,
+      process:   document.getElementById('logProcess').value,
+      grind:     document.getElementById('logGrind').value,
+      temp:      document.getElementById('logTemp').value,
+      steep:     document.getElementById('logSteep').value,
+      tasteNote: document.getElementById('logNotes').value,
+      dose:      state[state.mode].dose
+    };
+
+    fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(() => {
+      btnSubmit.textContent = 'บันทึกสูตรลง Google Sheet';
+      btnSubmit.disabled = false;
+      brewLogForm.reset();
+      setTimeout(renderLogs, 1500);
+    }).catch(() => {
+      alert("เกิดข้อผิดพลาดในการเชื่อมต่อ");
+      btnSubmit.textContent = 'บันทึกสูตรลง Google Sheet';
+      btnSubmit.disabled = false;
     });
   });
 
