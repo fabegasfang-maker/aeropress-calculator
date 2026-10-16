@@ -1,42 +1,1140 @@
-@import "tailwindcss";
-
-@layer base {
-  :root {
-    --bg: #1C130D;
-    --panel: #241A12;
-    --panel-2: #2C2016;
-    --line: #4A3A2A;
-    --line-soft: #3A2C1F;
-    --cream: #F1E6D3;
-    --cream-dim: #B7A88E;
-    --hot: #E08A3C;
-    --hot-soft: #7A4D22;
-    --cold: #5FBCC9;
-    --cold-soft: #2E5C61;
-    --warn: #E0533C;
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AeroPress Ratio — เครื่องคำนวณสูตรชง & บันทึกการชง</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#1C130D;
+    --panel:#241A12;
+    --panel-2:#2C2016;
+    --line:#4A3A2A;
+    --line-soft:#3A2C1F;
+    --cream:#F1E6D3;
+    --cream-dim:#B7A88E;
+    --hot:#E08A3C;
+    --hot-soft:#7A4D22;
+    --cold:#5FBCC9;
+    --cold-soft:#2E5C61;
+    --accent: var(--hot);
+    --accent-soft: var(--hot-soft);
+    --warn:#D6604A;
+  }
+  [data-mode="cold"]{
+    --accent: var(--cold);
+    --accent-soft: var(--cold-soft);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 15% -10%, rgba(224,138,60,0.10), transparent 60%),
+      radial-gradient(900px 500px at 100% 10%, rgba(95,188,201,0.06), transparent 55%),
+      var(--bg);
+    color:var(--cream);
+    font-family:'Sarabun', sans-serif;
+    min-height:100vh;
+    transition:background 0.5s ease;
+  }
+  .page{
+    max-width:920px;
+    margin:0 auto;
+    padding:48px 24px 80px;
+  }
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    border-bottom:1px solid var(--line);
+    padding-bottom:20px;
+    margin-bottom:24px;
+  }
+  .brandmark{
+    font-family:'Chakra Petch', sans-serif;
+    font-weight:700;
+    font-size:14px;
+    letter-spacing:0.32em;
+    color:var(--cream-dim);
+  }
+  h1{
+    font-family:'Chakra Petch', sans-serif;
+    font-weight:600;
+    font-size:26px;
+    margin:6px 0 0;
+    letter-spacing:0.01em;
+  }
+  .unit-tag{
+    font-family:'Chakra Petch', sans-serif;
+    font-size:12px;
+    letter-spacing:0.18em;
+    color:var(--accent);
+    border:1px solid var(--accent);
+    padding:6px 12px;
+    border-radius:2px;
+    transition:color 0.4s, border-color 0.4s;
   }
 
-  body {
-    font-family: 'Sarabun', system-ui, -apple-system, sans-serif;
-    background-color: var(--bg);
+  .nav-tabs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 28px;
+    border-bottom: 1px solid var(--line-soft);
+    padding-bottom: 12px;
+  }
+  .nav-btn {
+    background: transparent;
+    border: none;
+    color: var(--cream-dim);
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+  .nav-btn.active {
+    background: var(--panel-2);
+    color: var(--accent);
+    border: 1px solid var(--line);
+  }
+
+  .ratio-block{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+    margin-bottom:36px;
+  }
+  .ratio-label{
+    font-family:'Chakra Petch', sans-serif;
+    font-size:12px;
+    letter-spacing:0.24em;
+    color:var(--cream-dim);
+  }
+  .ratio-stepper{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:10px 18px;
+  }
+  .ratio-stepper button{
+    width:34px;height:34px;
+    border-radius:3px;
+    border:1px solid var(--line);
+    background:var(--panel-2);
+    color:var(--cream);
+    font-family:'Chakra Petch', sans-serif;
+    font-size:18px;
+    cursor:pointer;
+    transition:border-color .2s, color .2s;
+  }
+  .ratio-stepper button:hover{ border-color:var(--accent); color:var(--accent); }
+  .ratio-display{
+    font-family:'Chakra Petch', sans-serif;
+    font-size:30px;
+    font-weight:600;
+    display:flex;
+    align-items:baseline;
+    gap:6px;
+    min-width:96px;
+    justify-content:center;
+  }
+  .ratio-display input{
+    width:64px;
+    background:transparent;
+    border:none;
+    border-bottom:1px solid var(--line);
+    color:var(--accent);
+    font-family:'Chakra Petch', sans-serif;
+    font-size:30px;
+    font-weight:700;
+    text-align:center;
+    transition:color .4s;
+  }
+  .ratio-display input:focus{outline:none; border-bottom-color:var(--accent);}
+
+  .mode-tabs{
+    display:flex;
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+    border-radius:4px;
+    overflow:hidden;
+    margin-bottom:32px;
+    max-width:420px;
+    margin-left:auto;
+    margin-right:auto;
+  }
+  .mode-tabs button{
+    flex:1;
+    padding:14px 10px;
+    background:var(--panel);
+    color:var(--cream-dim);
+    border:none;
+    font-family:'Chakra Petch', sans-serif;
+    font-size:14px;
+    letter-spacing:0.1em;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    transition:background .3s, color .3s;
+  }
+  .mode-tabs button .dot{
+    width:6px;height:6px;border-radius:50%;
+    background:var(--cream-dim);
+    transition:background .3s;
+  }
+  .mode-tabs button.active{
+    background:var(--panel-2);
+    color:var(--cream);
+  }
+  .mode-tabs button.active .dot{ background:var(--accent); }
+
+  .main-grid{
+    display:grid;
+    grid-template-columns:220px 1fr;
+    gap:36px;
+    align-items:stretch;
+  }
+  @media (max-width:640px){
+    .main-grid{ grid-template-columns:1fr; }
+    .gauge-wrap{ order:2; }
+  }
+
+  .gauge-wrap{
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+  }
+
+  .controls{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+  }
+  .field{
+    background:var(--panel);
+    border:1px solid var(--line-soft);
+    border-radius:4px;
+    padding:14px 16px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 12px;
+  }
+  .field label{
+    font-size:14.5px;
+    color:var(--cream-dim);
+  }
+  .field label .hint{
+    display:block;
+    font-size:11px;
+    color:var(--cream-dim);
+    opacity:0.65;
+    margin-top:2px;
+    letter-spacing:0.03em;
+  }
+  .field .input-wrap{
+    display:flex;
+    align-items:baseline;
+    gap:6px;
+  }
+  .field input{
+    width:100%;
+    max-width:180px;
+    background:transparent;
+    border:none;
+    border-bottom:1px solid var(--line);
+    color:var(--cream);
+    font-family:'Sarabun', sans-serif;
+    font-size:16px;
+    text-align:right;
+    padding:4px 0;
+  }
+  .field input.num-input {
+    width: 72px;
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+  }
+  .field input:focus{ outline:none; border-bottom-color:var(--accent); }
+  .field .g{ font-family:'Chakra Petch', sans-serif; font-size:13px; color:var(--cream-dim); }
+
+  .result{
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:18px 18px 16px;
+    margin-top:4px;
+  }
+  .result-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    padding:9px 0;
+    border-bottom:1px solid var(--line-soft);
+    font-size:14px;
+    color:var(--cream-dim);
+    gap:12px;
+  }
+  .result-row:last-child{ border-bottom:none; }
+  .result-row span:first-child{ flex:1; }
+  .result-row span:last-child{
+    font-family:'Chakra Petch', sans-serif;
+    color:var(--cream);
+    font-size:15px;
+    text-align:right;
+    white-space:nowrap;
+  }
+  .result-row.highlight{
+    padding:12px 0;
+  }
+  .result-row.highlight span:first-child{
+    color:var(--cream);
+    font-weight:500;
+  }
+  .result-row.highlight span:last-child{
+    color:var(--accent);
+    font-size:28px;
+    font-weight:700;
+    transition:color .4s;
+  }
+  .warn-msg{
+    display:none;
+    font-size:12.5px;
+    color:var(--warn);
+    background:rgba(214,96,74,0.1);
+    border:1px solid rgba(214,96,74,0.35);
+    border-radius:3px;
+    padding:8px 10px;
+    margin-top:6px;
+  }
+  .warn-msg.show{ display:block; }
+
+  .timer-card {
+    background: var(--panel);
+    border: 1px solid var(--line-soft);
+    border-radius: 4px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 6px;
+    position: relative;
+    overflow: hidden;
+  }
+  .timer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .timer-title {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    color: var(--cream-dim);
+  }
+  .timer-presets {
+    display: flex;
+    gap: 6px;
+  }
+  .timer-preset-btn {
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    color: var(--cream-dim);
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .timer-preset-btn:hover {
+    border-color: var(--accent);
     color: var(--cream);
-    min-height: 100vh;
+  }
+  .timer-preset-btn.active {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+    font-weight: 600;
+  }
+  .timer-display-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .timer-display {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 42px;
+    font-weight: 700;
+    color: var(--cream);
+    letter-spacing: 0.05em;
+    line-height: 1;
+  }
+  .timer-controls {
+    display: flex;
+    gap: 8px;
+  }
+  .timer-btn {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    padding: 10px 18px;
+    border-radius: 3px;
+    border: 1px solid var(--line);
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .timer-btn-primary {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+  }
+  .timer-btn-primary:hover { opacity: 0.9; }
+  .timer-btn-secondary {
+    background: var(--panel-2);
+    color: var(--cream-dim);
+  }
+  .timer-btn-secondary:hover {
+    color: var(--cream);
+    border-color: var(--cream-dim);
+  }
+  .timer-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: var(--accent);
+    width: 100%;
+    transition: width 1s linear, background-color .4s;
+  }
+  .timer-card.finished {
+    border-color: var(--accent);
+    animation: pulse 1s infinite alternate;
+  }
+  @keyframes pulse {
+    from { box-shadow: 0 0 0px var(--accent); }
+    to { box-shadow: 0 0 12px var(--accent); }
   }
 
-  .font-chakra {
-    font-family: 'Chakra Petch', monospace, sans-serif;
+  .log-form-wrap {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 24px;
+    margin-bottom: 32px;
   }
-}
+  .log-form-title {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .log-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 600px) {
+    .log-grid { grid-template-columns: 1fr; }
+  }
+  .btn-submit {
+    grid-column: 1 / -1;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 12px;
+    border-radius: 3px;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: opacity 0.2s;
+  }
+  .btn-submit:hover { opacity: 0.9; }
 
-@keyframes pulse-glow {
-  0%, 100% {
-    box-shadow: 0 0 0px var(--accent-glow, rgba(224, 138, 60, 0));
+  .log-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
   }
-  50% {
-    box-shadow: 0 0 16px var(--accent-glow, rgba(224, 138, 60, 0.4));
+  .log-card {
+    background: var(--panel-2);
+    border: 1px solid var(--line-soft);
+    border-left: 4px solid var(--accent);
+    border-radius: 4px;
+    padding: 18px;
+    position: relative;
   }
-}
+  .log-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .log-card-title {
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--cream);
+  }
+  .log-card-mode {
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .log-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+    font-size: 13.5px;
+    margin-bottom: 12px;
+  }
+  .log-detail-item {
+    display: flex;
+    flex-direction: column;
+  }
+  .log-detail-label {
+    font-size: 11px;
+    color: var(--cream-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .log-detail-val {
+    color: var(--cream);
+    font-weight: 500;
+  }
+  .log-notes-box {
+    background: var(--panel);
+    border-radius: 3px;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: var(--cream-dim);
+    line-height: 1.5;
+  }
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--cream-dim);
+    opacity: 0.6;
+    font-size: 14px;
+  }
 
-.animate-pulse-glow {
-  animation: pulse-glow 1.5s infinite ease-in-out;
-}
+  footer{
+    margin-top:44px;
+    padding-top:18px;
+    border-top:1px solid var(--line);
+    font-size:12.5px;
+    color:var(--cream-dim);
+    line-height:1.7;
+  }
+</style>
+</head>
+<body data-mode="hot">
+<div class="page">
+
+  <header>
+    <div>
+      <div class="brandmark">AEROPRESS · BREW LAB</div>
+      <h1>เครื่องคำนวณอัตราส่วนกาแฟ</h1>
+    </div>
+    <div class="unit-tag" id="modeTag">โหมดร้อน</div>
+  </header>
+
+  <!-- Navigation -->
+  <div class="nav-tabs">
+    <button class="nav-btn active" id="btnViewCalc">เครื่องคำนวณ</button>
+    <button class="nav-btn" id="btnViewLog">สมุดบันทึกสูตร (Google Sheet)</button>
+  </div>
+
+  <!-- VIEW 1: CALCULATOR -->
+  <div id="viewCalc">
+    <div class="ratio-block">
+      <div class="ratio-label">อัตราส่วนเป้าหมาย (RATIO)</div>
+      <div class="ratio-stepper">
+        <button id="ratioMinus" aria-label="ลด">−</button>
+        <div class="ratio-display">1 : <input type="number" id="ratioInput" value="15" step="0.5" min="8" max="20"></div>
+        <button id="ratioPlus" aria-label="เพิ่ม">+</button>
+      </div>
+    </div>
+
+    <div class="mode-tabs">
+      <button class="tab active" data-mode="hot"><span class="dot"></span> ชงร้อน (Hot)</button>
+      <button class="tab" data-mode="cold"><span class="dot"></span> ชงเย็น (Cold / Iced)</button>
+    </div>
+
+    <div class="main-grid">
+      <div class="gauge-wrap">
+        <svg id="gauge" width="200" height="380" viewBox="0 0 200 380"></svg>
+      </div>
+
+      <div class="controls">
+        <div class="field">
+          <label>ขนาดกาแฟ (dose)</label>
+          <div class="input-wrap">
+            <input type="number" id="doseInput" class="num-input" value="18" min="1" step="0.5">
+            <span class="g">g</span>
+          </div>
+        </div>
+        <div class="field">
+          <label id="brewLabel">น้ำร้อนสำหรับสกัด</label>
+          <div class="input-wrap">
+            <input type="number" id="brewInput" class="num-input" value="100" min="0" step="1">
+            <span class="g">g</span>
+          </div>
+        </div>
+        <div class="field" id="iceField" style="display:none">
+          <label>จำนวนน้ำแข็ง<span class="hint">≈ 23 g / ก้อน</span></label>
+          <div class="input-wrap">
+            <input type="number" id="iceInput" class="num-input" value="5" min="0" step="1">
+            <span class="g">ก้อน</span>
+          </div>
+        </div>
+        <div class="field" id="meltField" style="display:none">
+          <label>อัตราการละลาย (สมมติฐาน)<span class="hint">ปรับได้ตามลักษณะการชง</span></label>
+          <div class="input-wrap">
+            <input type="number" id="meltPercentInput" class="num-input" value="35" min="0" max="100" step="5">
+            <span class="g">%</span>
+          </div>
+        </div>
+
+        <!-- HOT MODE RESULT -->
+        <div class="result" id="hotResult">
+          <div class="result-row">
+            <span>น้ำทั้งหมดที่ต้องใช้ (ตามอัตราส่วน)</span>
+            <span id="totalOut">0 g</span>
+          </div>
+          <div class="result-row highlight">
+            <span>น้ำเจือจางที่ต้องเติม</span>
+            <span id="diluteOut">0 g</span>
+          </div>
+          <div class="result-row">
+            <span>อัตราส่วนจริงที่ได้</span>
+            <span id="actualRatioOut">1 : 15.0</span>
+          </div>
+          <div class="warn-msg" id="warnMsg">น้ำที่ใช้สกัดมากกว่าปริมาณน้ำทั้งหมดตามอัตราส่วนแล้ว — ลดน้ำสกัด หรือเพิ่มอัตราส่วน</div>
+        </div>
+
+        <!-- COLD MODE RESULT -->
+        <div class="result" id="coldResult" style="display:none">
+          <div class="result-row">
+            <span>น้ำทั้งหมดที่ต้องใช้ (ตามอัตราส่วน)</span>
+            <span id="totalOutCold">0 g</span>
+          </div>
+          <div class="result-row">
+            <span>น้ำแข็งที่จะละลาย</span>
+            <span id="iceMeltedOut">0 g</span>
+          </div>
+          <div class="result-row highlight">
+            <span>น้ำ/น้ำแข็งเพิ่มเติมที่ต้องเติม</span>
+            <span id="diluteOutCold">0 g</span>
+          </div>
+          <div class="result-row">
+            <span>อัตราส่วนจริงที่ได้</span>
+            <span id="actualRatioOutCold">1 : 15.0</span>
+          </div>
+          <div class="warn-msg" id="warnMsgCold"></div>
+        </div>
+
+        <!-- TIMER MODULE -->
+        <div class="timer-card" id="timerCard">
+          <div class="timer-header">
+            <span class="timer-title">ตัวจับเวลาชง (BREW TIMER)</span>
+            <div class="timer-presets">
+              <button class="timer-preset-btn" data-time="105">1:45</button>
+              <button class="timer-preset-btn" data-time="110">1:50</button>
+              <button class="timer-preset-btn active" data-time="120">2:00</button>
+            </div>
+          </div>
+          <div class="timer-display-wrap">
+            <div class="timer-display" id="timerDisplay">02:00</div>
+            <div class="timer-controls">
+              <button class="timer-btn timer-btn-primary" id="timerStartBtn">เริ่ม</button>
+              <button class="timer-btn timer-btn-secondary" id="timerResetBtn">รีเซ็ต</button>
+            </div>
+          </div>
+          <div class="timer-progress" id="timerProgress"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIEW 2: LOG FORM & HISTORY -->
+  <div id="viewLog" style="display:none;">
+    <div class="log-form-wrap">
+      <div class="log-form-title">📝 บันทึกสูตรชงใหม่ลง Google Sheet</div>
+      <form id="brewLogForm">
+        <div class="log-grid">
+          <div class="field">
+            <label>Origin (ชื่อกาแฟ)</label>
+            <input type="text" id="logCoffee" placeholder="เช่น Loa, Akha" required>
+          </div>
+          <div class="field">
+            <label>ระดับการคั่ว</label>
+            <input type="text" id="logRoast" placeholder="เช่น กลาง, อ่อน">
+          </div>
+          <div class="field">
+            <label>Process</label>
+            <input type="text" id="logProcess" placeholder="เช่น Washed (สะอาด)">
+          </div>
+          <div class="field">
+            <label>เบอร์บด (Clix)</label>
+            <input type="text" id="logGrind" placeholder="เช่น 41">
+          </div>
+          <div class="field">
+            <label>อุณหภูมิน้ำ (°C)</label>
+            <input type="text" id="logTemp" placeholder="เช่น 80">
+          </div>
+          <div class="field">
+            <label>เวลาแช่ (นาที)</label>
+            <input type="text" id="logSteep" placeholder="เช่น 2">
+          </div>
+          <div class="field" style="grid-column: 1 / -1;">
+            <label>รสชาติที่ได้ (บันทึกใน Col P)</label>
+            <input type="text" id="logNotes" style="max-width:100%;" placeholder="เช่น ช็อกโกแลต, ถั่ว, ผลไม้เขตร้อน">
+          </div>
+          <button type="submit" class="btn-submit" id="btnSubmit">บันทึกสูตรลง Google Sheet</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="log-form-title">☕ รายการสูตรทั้งหมดจาก Google Sheet</div>
+    <div id="logList" class="log-list"></div>
+  </div>
+
+  <footer>
+    วิธีอ่านค่า: ใส่กาแฟและน้ำร้อนตามปริมาณที่ใช้ "สกัด" กาแฟในกระบอก AeroPress ก่อน จากนั้นเติมน้ำ/น้ำแข็งตามค่าที่คำนวณให้ (น้ำแข็งก้อนละ 23g, ละลาย 35%)
+  </footer>
+
+</div>
+
+<script>
+  // Web App URL ของ Google Apps Script
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwASV9OLb5hn9Y_wwJ0zBvFuQjX9LCHxnI1ouSPuyHynfrHI0zn1edb44xzh8cD3MtM9w/exec";
+
+  // แก้ไขค่าน้ำแข็งต่อก้อนเป็น 23 กรัม และอัตราละลาย 35%
+  const CUBE_G = 23;
+
+  const state = {
+    ratio: 15,
+    mode: 'hot',
+    hot:  { dose: 18, brew: 100 },
+    cold: { dose: 18, brew: 100, ice: 5, meltPercent: 35 },
+  };
+
+  const btnViewCalc = document.getElementById('btnViewCalc');
+  const btnViewLog  = document.getElementById('btnViewLog');
+  const viewCalc    = document.getElementById('viewCalc');
+  const viewLog     = document.getElementById('viewLog');
+
+  btnViewCalc.addEventListener('click', () => {
+    btnViewCalc.classList.add('active');
+    btnViewLog.classList.remove('active');
+    viewCalc.style.display = 'block';
+    viewLog.style.display = 'none';
+  });
+
+  btnViewLog.addEventListener('click', () => {
+    btnViewLog.classList.add('active');
+    btnViewCalc.classList.remove('active');
+    viewCalc.style.display = 'none';
+    viewLog.style.display = 'block';
+    renderLogs();
+  });
+
+  const ratioInput   = document.getElementById('ratioInput');
+  const ratioMinus   = document.getElementById('ratioMinus');
+  const ratioPlus    = document.getElementById('ratioPlus');
+  const doseInput    = document.getElementById('doseInput');
+  const brewInput    = document.getElementById('brewInput');
+  const iceInput     = document.getElementById('iceInput');
+  const iceField     = document.getElementById('iceField');
+  const meltField    = document.getElementById('meltField');
+  const meltPercentInput = document.getElementById('meltPercentInput');
+  const brewLabel    = document.getElementById('brewLabel');
+  const modeTag      = document.getElementById('modeTag');
+  const body         = document.body;
+  const tabs         = document.querySelectorAll('.mode-tabs button');
+  const gauge        = document.getElementById('gauge');
+
+  const hotResult    = document.getElementById('hotResult');
+  const coldResult   = document.getElementById('coldResult');
+  const totalOut     = document.getElementById('totalOut');
+  const diluteOut    = document.getElementById('diluteOut');
+  const actualRatioOut = document.getElementById('actualRatioOut');
+  const warnMsg      = document.getElementById('warnMsg');
+
+  const totalOutCold      = document.getElementById('totalOutCold');
+  const iceMeltedOut      = document.getElementById('iceMeltedOut');
+  const diluteOutCold     = document.getElementById('diluteOutCold');
+  const actualRatioOutCold= document.getElementById('actualRatioOutCold');
+  const warnMsgCold       = document.getElementById('warnMsgCold');
+
+  function setMode(mode){
+    state.mode = mode;
+    body.setAttribute('data-mode', mode);
+    tabs.forEach(t => t.classList.toggle('active', t.dataset.mode === mode));
+    modeTag.textContent = mode === 'hot' ? 'โหมดร้อน' : 'โหมดเย็น';
+    brewLabel.textContent = mode === 'hot' ? 'น้ำร้อนสำหรับสกัด' : 'น้ำร้อนสำหรับสกัด (ลงบนน้ำแข็ง)';
+    doseInput.value = state[mode].dose;
+    brewInput.value = state[mode].brew;
+
+    const isCold = mode === 'cold';
+    iceField.style.display = isCold ? 'flex' : 'none';
+    meltField.style.display = isCold ? 'flex' : 'none';
+    hotResult.style.display = isCold ? 'none' : 'block';
+    coldResult.style.display = isCold ? 'block' : 'none';
+    if(isCold){
+      iceInput.value = state.cold.ice;
+      meltPercentInput.value = state.cold.meltPercent;
+    }
+
+    compute();
+  }
+
+  tabs.forEach(t => t.addEventListener('click', () => setMode(t.dataset.mode)));
+
+  ratioMinus.addEventListener('click', () => {
+    ratioInput.value = Math.max(8, (parseFloat(ratioInput.value) || 15) - 0.5);
+    compute();
+  });
+  ratioPlus.addEventListener('click', () => {
+    ratioInput.value = Math.min(20, (parseFloat(ratioInput.value) || 15) + 0.5);
+    compute();
+  });
+  ratioInput.addEventListener('input', compute);
+  doseInput.addEventListener('input', () => { state[state.mode].dose = parseFloat(doseInput.value) || 0; compute(); });
+  brewInput.addEventListener('input', () => { state[state.mode].brew = parseFloat(brewInput.value) || 0; compute(); });
+  iceInput.addEventListener('input', () => { state.cold.ice = parseFloat(iceInput.value) || 0; compute(); });
+  meltPercentInput.addEventListener('input', () => {
+    let v = parseFloat(meltPercentInput.value);
+    if(isNaN(v)) v = 0;
+    v = Math.max(0, Math.min(100, v));
+    state.cold.meltPercent = v;
+    compute();
+  });
+
+  function drawGauge(marks, fillTopValue, maxScale){
+    const top = 26, bottom = 350, height = bottom - top;
+    const cx = 100, halfW = 42;
+    const valToY = v => bottom - height * Math.max(0, Math.min(1, v / maxScale));
+    const sortedFills = [...marks].sort((a,b) => a.value - b.value);
+
+    let fillRects = '';
+    sortedFills.forEach((m, i) => {
+      const y = valToY(m.value);
+      const opacity = 0.22 + (i / Math.max(1, sortedFills.length - 1)) * 0.6;
+      fillRects += `<rect x="${cx-halfW}" y="${y}" width="${halfW*2}" height="${bottom-y}" fill="var(--accent)" opacity="${opacity.toFixed(2)}"/>`;
+    });
+
+    let lines = '';
+    marks.forEach(m => {
+      const y = valToY(m.value);
+      const isTarget = m.key === 'total';
+      lines += `
+        <line x1="${cx-halfW}" y1="${y}" x2="${cx+halfW}" y2="${y}"
+              stroke="${isTarget ? 'var(--accent)' : 'var(--cream)'}" stroke-width="${isTarget ? 1.6 : 1.2}"
+              stroke-dasharray="${isTarget ? '4 3' : '2 3'}" opacity="0.9"/>
+        <text x="${cx}" y="${y-6}" text-anchor="middle" font-family="Chakra Petch, sans-serif"
+              font-size="11" font-weight="400" letter-spacing="0.3"
+              fill="${isTarget ? 'var(--accent)' : 'var(--cream)'}"
+              paint-order="stroke" stroke="rgba(15,10,7,0.92)" stroke-width="3.5" stroke-linejoin="round">${m.label} ${Math.round(m.value)}</text>
+      `;
+    });
+
+    gauge.innerHTML = `
+      <defs>
+        <clipPath id="cylClip">
+          <rect x="${cx-halfW}" y="${top}" width="${halfW*2}" height="${height}" rx="10"/>
+        </clipPath>
+      </defs>
+      <rect x="${cx-halfW}" y="${top}" width="${halfW*2}" height="${height}" rx="10"
+            fill="var(--panel-2)" stroke="var(--line)" stroke-width="1.5"/>
+      <g clip-path="url(#cylClip)">${fillRects}</g>
+      ${lines}
+      <text x="${cx}" y="${bottom+22}" text-anchor="middle" font-family="Chakra Petch, sans-serif"
+            font-size="10" letter-spacing="1.5" fill="var(--cream-dim)">GAUGE (g)</text>
+    `;
+  }
+
+  function computeHot(ratio, dose, brew){
+    const total = dose * ratio;
+    const dilute = total - brew;
+    totalOut.textContent = total.toFixed(0) + ' g';
+    if(dilute < 0){
+      diluteOut.textContent = '0 g';
+      warnMsg.classList.add('show');
+      actualRatioOut.textContent = dose > 0 ? `1 : ${(brew/dose).toFixed(1)}` : '—';
+    } else {
+      diluteOut.textContent = dilute.toFixed(0) + ' g';
+      warnMsg.classList.remove('show');
+      actualRatioOut.textContent = `1 : ${ratio.toFixed(1)}`;
+    }
+    const maxScale = Math.max(50, Math.ceil((Math.max(total, brew) * 1.2) / 10) * 10);
+    drawGauge([
+      { value: brew, label: 'สกัด', key: 'brew' },
+      { value: Math.max(total,0), label: 'รวม', key: 'total' },
+    ], total, maxScale);
+  }
+
+  function computeCold(ratio, dose, brew){
+    const total = dose * ratio;
+    const iceCubes = state.cold.ice;
+    const iceG = iceCubes * CUBE_G; // 23g ต่อก้อน
+    const meltFrac = state.cold.meltPercent / 100; // 35%
+    const melted = iceG * meltFrac;
+
+    const liquidAfterMelt = brew + melted;
+    let remaining = total - liquidAfterMelt;
+    let warn = false;
+    if(remaining < 0){ remaining = 0; warn = true; }
+
+    totalOutCold.textContent = total.toFixed(0) + ' g';
+    iceMeltedOut.textContent = `${melted.toFixed(0)} g (${state.cold.meltPercent}% ของน้ำแข็ง ${iceG.toFixed(0)} g)`;
+    diluteOutCold.textContent = remaining.toFixed(0) + ' g';
+
+    if(warn){
+      actualRatioOutCold.textContent = dose > 0 ? `1 : ${(liquidAfterMelt/dose).toFixed(1)}` : '—';
+      warnMsgCold.textContent = 'น้ำสกัด + น้ำแข็งที่ละลายรวมกันมากกว่าน้ำทั้งหมดตามอัตราส่วนแล้ว — ลองลดน้ำแข็งหรือน้ำสกัด หรือเพิ่มอัตราส่วน';
+      warnMsgCold.classList.add('show');
+    } else {
+      actualRatioOutCold.textContent = `1 : ${ratio.toFixed(1)}`;
+      warnMsgCold.classList.remove('show');
+    }
+
+    const maxScale = Math.max(50, Math.ceil((Math.max(total, liquidAfterMelt) * 1.2) / 10) * 10);
+    const marks = [
+      { value: brew, label: 'สกัด', key: 'brew' },
+    ];
+    if(iceG > 0){
+      marks.push({ value: liquidAfterMelt, label: 'หลังน้ำแข็งละลาย', key: 'melt' });
+    }
+    marks.push({ value: Math.max(total,0), label: 'รวม', key: 'total' });
+    drawGauge(marks, total, maxScale);
+  }
+
+  function compute(){
+    let ratio = parseFloat(ratioInput.value);
+    if(!ratio || ratio < 1) ratio = 15;
+    state.ratio = ratio;
+
+    const dose = state[state.mode].dose;
+    const brew = state[state.mode].brew;
+
+    if(state.mode === 'hot'){
+      computeHot(ratio, dose, brew);
+    } else {
+      computeCold(ratio, dose, brew);
+    }
+  }
+
+  /* TIMER LOGIC */
+  let timerInterval = null;
+  let timerTotalSeconds = 120;
+  let timerRemainingSeconds = 120;
+  let isTimerRunning = false;
+
+  const timerDisplay = document.getElementById('timerDisplay');
+  const timerStartBtn = document.getElementById('timerStartBtn');
+  const timerResetBtn = document.getElementById('timerResetBtn');
+  const timerProgress = document.getElementById('timerProgress');
+  const timerCard = document.getElementById('timerCard');
+  const presetBtns = document.querySelectorAll('.timer-preset-btn');
+
+  function updateTimerUI() {
+    const mins = Math.floor(timerRemainingSeconds / 60);
+    const secs = timerRemainingSeconds % 60;
+    timerDisplay.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    const pct = (timerRemainingSeconds / timerTotalSeconds) * 100;
+    timerProgress.style.width = `${pct}%`;
+  }
+
+  function playAlertSound() {
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const now = audioCtx.currentTime;
+      [0, 0.2, 0.4].forEach((delay) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, now + delay);
+        gain.gain.setValueAtTime(0.15, now + delay);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.15);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now + delay);
+        osc.stop(now + delay + 0.15);
+      });
+    } catch(e) {}
+  }
+
+  function startTimer() {
+    if (isTimerRunning) {
+      clearInterval(timerInterval);
+      isTimerRunning = false;
+      timerStartBtn.textContent = 'เริ่มต่อ';
+      return;
+    }
+
+    if (timerRemainingSeconds <= 0) {
+      timerRemainingSeconds = timerTotalSeconds;
+      timerCard.classList.remove('finished');
+    }
+
+    isTimerRunning = true;
+    timerStartBtn.textContent = 'หยุด';
+
+    timerInterval = setInterval(() => {
+      timerRemainingSeconds--;
+      updateTimerUI();
+
+      if (timerRemainingSeconds <= 0) {
+        clearInterval(timerInterval);
+        isTimerRunning = false;
+        timerStartBtn.textContent = 'เริ่ม';
+        timerCard.classList.add('finished');
+        playAlertSound();
+      }
+    }, 1000);
+  }
+
+  function resetTimer() {
+    clearInterval(timerInterval);
+    isTimerRunning = false;
+    timerRemainingSeconds = timerTotalSeconds;
+    timerStartBtn.textContent = 'เริ่ม';
+    timerCard.classList.remove('finished');
+    updateTimerUI();
+  }
+
+  timerStartBtn.addEventListener('click', startTimer);
+  timerResetBtn.addEventListener('click', resetTimer);
+
+  presetBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      presetBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const timeSecs = parseInt(btn.dataset.time, 10);
+      timerTotalSeconds = timeSecs;
+      resetTimer();
+    });
+  });
+
+  /* GOOGLE SHEETS API LOGIC */
+  const brewLogForm = document.getElementById('brewLogForm');
+  const logList     = document.getElementById('logList');
+  const btnSubmit   = document.getElementById('btnSubmit');
+
+  function renderLogs() {
+    logList.innerHTML = '<div class="empty-state">กำลังดึงข้อมูลสูตรจาก Google Sheet...</div>';
+    
+    fetch(GOOGLE_SCRIPT_URL)
+      .then(res => res.json())
+      .then(logs => {
+        if (!logs || logs.length === 0) {
+          logList.innerHTML = '<div class="empty-state">ยังไม่มีรายการบันทึกใน Google Sheet</div>';
+          return;
+        }
+
+        logs.reverse();
+
+        logList.innerHTML = logs.map(item => {
+          const hasNote = item.tasteNote && String(item.tasteNote).trim() !== '';
+
+          return `
+            <div class="log-card">
+              <div class="log-card-header">
+                <div>
+                  <div class="log-card-title">${escapeHtml(item.coffee)}</div>
+                  <div class="log-card-mode">${escapeHtml(item.mode)} | ${escapeHtml(item.process || '-')}</div>
+                </div>
+              </div>
+              <div class="log-details">
+                <div class="log-detail-item">
+                  <span class="log-detail-label">ระดับการคั่ว</span>
+                  <span class="log-detail-val">${escapeHtml(item.roast || '-')}</span>
+                </div>
+                <div class="log-detail-item">
+                  <span class="log-detail-label">อุณหภูมิน้ำ</span>
+                  <span class="log-detail-val">${escapeHtml(item.temp ? item.temp + ' °C' : '-')}</span>
+                </div>
+                <div class="log-detail-item">
+                  <span class="log-detail-label">เบอร์บด</span>
+                  <span class="log-detail-val">${escapeHtml(item.grind || '-')}</span>
+                </div>
+                <div class="log-detail-item">
+                  <span class="log-detail-label">เวลาแช่</span>
+                  <span class="log-detail-val">${escapeHtml(item.steep ? item.steep + ' นาที' : '-')}</span>
+                </div>
+              </div>
+              ${hasNote ? `<div class="log-notes-box"><strong>รสชาติที่ได้:</strong> ${escapeHtml(item.tasteNote)}</div>` : ''}
+            </div>
+          `;
+        }).join('');
+      })
+      .catch(err => {
+        logList.innerHTML = '<div class="empty-state">ไม่สามารถดึงข้อมูลได้ กรุณาตรวจสอบสิทธิ์และ Web App URL</div>';
+      });
+  }
+
+  function escapeHtml(str) {
+    return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  brewLogForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    btnSubmit.textContent = 'กำลังบันทึกลง Google Sheet...';
+    btnSubmit.disabled = true;
+
+    const payload = {
+      mode:      state.mode === 'hot' ? 'HOT🔥' : 'ICED❄️',
+      coffee:    document.getElementById('logCoffee').value,
+      roast:     document.getElementById('logRoast').value,
+      process:   document.getElementById('logProcess').value,
+      grind:     document.getElementById('logGrind').value,
+      temp:      document.getElementById('logTemp').value,
+      steep:     document.getElementById('logSteep').value,
+      tasteNote: document.getElementById('logNotes').value,
+      dose:      state[state.mode].dose
+    };
+
+    fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(() => {
+      btnSubmit.textContent = 'บันทึกสูตรลง Google Sheet';
+      btnSubmit.disabled = false;
+      brewLogForm.reset();
+      setTimeout(renderLogs, 1500);
+    }).catch(() => {
+      alert("เกิดข้อผิดพลาดในการเชื่อมต่อ");
+      btnSubmit.textContent = 'บันทึกสูตรลง Google Sheet';
+      btnSubmit.disabled = false;
+    });
+  });
+
+  setMode('hot');
+  updateTimerUI();
+</script>
+</body>
+</html>
